@@ -11,5 +11,5 @@ window.WHITEBOARD_CONFIG = {
 window.WHITEBOARD_CONFIG = {
   SERVER_HTTP_URL: "https://whiteboard-server-ecer.onrender.com",
   SERVER_WS_URL: "wss://whiteboard-server-ecer.onrender.com",
-  GOOGLE_CLIENT_ID: "tumhari-real-client-id.apps.googleusercontent.com" // Yahan apni asli Google Client ID daal dena
+  GOOGLE_CLIENT_ID: "880429209980-uigou6uijadbrdgks389go154ipeo51j.apps.googleusercontent.com" // Yahan apni asli Google Client ID daal dena
 };
