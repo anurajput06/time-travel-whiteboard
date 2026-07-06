@@ -4,9 +4,9 @@ A whiteboard where anyone, from anywhere, can open a link and draw together
 in real time — no conflicts, ever — plus a feature no mainstream whiteboard
 tool offers: **git-style time travel, forking, and merging of boards.**
 
-> **Two different things, don't confuse them:** anyone who opens the *same*
-> room link (`?room=xxxx`) collaborates live automatically — that's the core
-> real-time feature. Fork and Merge are a separate, deliberate action for
+>anyone who opens the *same* room link (`?room=xxxx`) collaborates live 
+>automatically — that's the core real-time feature. 
+>Fork and Merge are a separate, deliberate action for
 > combining two otherwise-*independent* boards (different room codes) — they
 > don't auto-sync with each other, because the whole point is that they stay
 > independent until you choose to merge them.
