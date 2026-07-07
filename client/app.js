@@ -27,12 +27,27 @@
   // ---- Identity (from auth session, or anonymous guest) ----
   const session = window.WhiteboardAuth ? window.WhiteboardAuth.getSession() : null;
   const clientId = session ? session.user.email : Math.random().toString(36).slice(2, 7);
-  const displayName = session ? session.user.name : clientId;
+  let displayName = session ? session.user.name : clientId;
   userNameEl.textContent = 'you: ' + displayName + (session ? '' : ' (guest)');
   if (session) {
     signOutBtn.style.display = 'inline';
     signOutBtn.addEventListener('click', () => window.WhiteboardAuth.logout());
   }
+
+  // ---- Editable display name ----
+  // Works for guests too (session-only) and for signed-in users (this
+  // session only, for now — it doesn't persist back to the account).
+  const editNameBtn = document.getElementById('editNameBtn');
+  editNameBtn.addEventListener('click', () => {
+    const next = window.prompt('Your display name (visible to others in this room):', displayName);
+    if (next === null) return; // cancelled
+    const clean = next.trim().slice(0, 40);
+    if (!clean) return;
+    displayName = clean;
+    userNameEl.textContent = 'you: ' + displayName + (session ? '' : ' (guest)');
+    if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'rename', name: displayName }));
+    else outbox.push({ type: 'rename', name: displayName });
+  });
 
   function hashCode(s) { let h = 0; for (let i = 0; i < s.length; i++) { h = (h << 5) - h + s.charCodeAt(i); h |= 0; } return h; }
 
@@ -122,6 +137,42 @@
   toggleLogBtn.addEventListener('click', () => setLogCollapsed(true));
   showLogBtn.addEventListener('click', () => setLogCollapsed(false));
   try { setLogCollapsed(localStorage.getItem(LOG_COLLAPSE_KEY) === '1'); } catch (e) {}
+
+  // ---- Time Machine collapse toggle (same idea — board gets more room) ----
+  const timeMachinePanel = document.getElementById('timeMachinePanel');
+  const hideTmBtn = document.getElementById('hideTmBtn');
+  const showTmBtn = document.getElementById('showTmBtn');
+  const TM_COLLAPSE_KEY = 'whiteboard_tm_collapsed_v1';
+  function setTmCollapsed(collapsed) {
+    timeMachinePanel.classList.toggle('collapsed', collapsed);
+    showTmBtn.style.display = collapsed ? 'block' : 'none';
+    try { localStorage.setItem(TM_COLLAPSE_KEY, collapsed ? '1' : '0'); } catch (e) {}
+  }
+  hideTmBtn.addEventListener('click', () => setTmCollapsed(true));
+  showTmBtn.addEventListener('click', () => setTmCollapsed(false));
+  try { setTmCollapsed(localStorage.getItem(TM_COLLAPSE_KEY) === '1'); } catch (e) {}
+
+  // ---- Presence dropdown (who's actually in this room) ----
+  const presenceBtn = document.getElementById('presenceBtn');
+  const presenceDropdown = document.getElementById('presenceDropdown');
+  let peerNames = [];
+  function renderPresenceDropdown() {
+    if (peerNames.length === 0) {
+      presenceDropdown.innerHTML = `<div class="presence-row">Just you so far</div>`;
+      return;
+    }
+    presenceDropdown.innerHTML = peerNames.map(name => {
+      const isYou = name === displayName;
+      return `<div class="presence-row"><span class="presence-dot"></span>${name}${isYou ? ' (you)' : ''}</div>`;
+    }).join('');
+  }
+  presenceBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = presenceDropdown.style.display !== 'none';
+    presenceDropdown.style.display = open ? 'none' : 'block';
+  });
+  document.addEventListener('click', () => { presenceDropdown.style.display = 'none'; });
+  presenceDropdown.addEventListener('click', (e) => e.stopPropagation());
 
   // ---- Brush render parameters ----
   function brushParams(brush) {
@@ -556,6 +607,8 @@
         (msg.ops || []).forEach(op => knownOps.set(op.id, op));
         (msg.tombstones || []).forEach(id => tombstones.add(id));
         peerCountEl.textContent = msg.peerCount || 1;
+        peerNames = msg.names || [];
+        renderPresenceDropdown();
         refreshTimeMachineRange();
         redrawAll();
       } else if (msg.type === 'op') {
@@ -577,6 +630,8 @@
         }
       } else if (msg.type === 'presence') {
         peerCountEl.textContent = msg.peerCount;
+        peerNames = msg.names || [];
+        renderPresenceDropdown();
       }
     };
 

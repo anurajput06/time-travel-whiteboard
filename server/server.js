@@ -208,6 +208,13 @@ app.post('/rooms/:targetRoomId/merge', (req, res) => {
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+function presenceNames(room) {
+  return Array.from(room.clients).map(c => c.identity?.name || 'Someone').filter(Boolean);
+}
+function broadcastPresence(room) {
+  broadcast(room, { type: 'presence', peerCount: room.clients.size, names: presenceNames(room) }, null);
+}
+
 wss.on('connection', (ws, req) => {
   const url = new URL(req.url, 'http://localhost');
   const roomId = sanitizeRoomId(url.searchParams.get('room')) || 'lobby';
@@ -235,10 +242,11 @@ wss.on('connection', (ws, req) => {
     clearTs: room.clearTs,
     clearClientId: room.clearClientId,
     peerCount: room.clients.size,
+    names: presenceNames(room),
     you: ws.identity,
   }));
 
-  broadcast(room, { type: 'presence', peerCount: room.clients.size }, ws);
+  broadcastPresence(room);
 
   ws.on('pong', () => { ws.isAlive = true; });
 
@@ -246,6 +254,15 @@ wss.on('connection', (ws, req) => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     room.lastActive = Date.now();
+
+    if (msg.type === 'rename' && typeof msg.name === 'string') {
+      const clean = msg.name.trim().slice(0, 40);
+      if (clean) {
+        ws.identity.name = clean;
+        broadcastPresence(room);
+      }
+      return;
+    }
 
     if (msg.type === 'op' && isValidOp(msg.op)) {
       if (!room.ops.has(msg.op.id)) {
@@ -284,7 +301,7 @@ wss.on('connection', (ws, req) => {
   ws.on('close', () => {
     room.clients.delete(ws);
     console.log(`[leave] room="${roomId}" user="${ws.identity.name}" clients=${room.clients.size}`);
-    broadcast(room, { type: 'presence', peerCount: room.clients.size }, null);
+    broadcastPresence(room);
   });
 
   ws.on('error', (err) => console.error(`[ws error] room="${roomId}":`, err.message));

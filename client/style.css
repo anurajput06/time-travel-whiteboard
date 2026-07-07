@@ -83,6 +83,8 @@ button{ font-family:inherit; }
   .ft-btn{ width:54px; height:46px; }
   .canvas-hint{ right:12px; bottom:12px; left:12px; max-width:none; }
   .show-log-btn{ top:12px; right:12px; }
+  .show-tm-btn{ bottom:12px; left:12px; }
+  .presence-dropdown{ max-width:calc(100vw - 32px); }
 }
 
 /* ================= Main layout ================= */
@@ -180,10 +182,13 @@ button{ font-family:inherit; }
 /* ================= Time Machine ================= */
 .timemachine{
   background:var(--panel); border-top:1px solid var(--panel-border); padding:16px 24px; flex-shrink:0;
+  max-height:280px; overflow:hidden; transition:max-height .25s ease, padding .2s ease, border-color .2s ease;
 }
+.timemachine.collapsed{ max-height:0; padding-top:0; padding-bottom:0; border-top-color:transparent; }
 .tm-heading{ display:flex; align-items:baseline; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
 .tm-title{ font-family:var(--font-display); font-weight:700; font-size:15px; color:var(--accent-amber); }
-.tm-subtitle{ font-size:13px; color:var(--ink-soft); }
+.tm-subtitle{ font-size:13px; color:var(--ink-soft); flex:1; min-width:200px; }
+.tm-hide-btn{ margin-left:auto; flex-shrink:0; }
 .tm-row{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
 .tm-slider-label{ font-size:12px; color:var(--ink-faint); font-family:var(--font-mono); }
 .tm-slider{ flex:1; accent-color:var(--accent-amber); }
@@ -204,6 +209,28 @@ button{ font-family:inherit; }
   font-size:13px; padding:9px 12px; border-radius:10px; font-family:var(--font-mono); width:200px;
 }
 .tm-status{ font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft); margin:8px 0 0; }
+
+.show-tm-btn{
+  position:absolute; bottom:28px; left:28px; z-index:15;
+  background:var(--panel); border:1px solid var(--panel-border); color:var(--ink);
+  font-size:13px; font-weight:600; padding:9px 16px; border-radius:100px; cursor:pointer;
+  box-shadow:var(--shadow-md);
+}
+.show-tm-btn:hover{ background:var(--accent-amber-soft); border-color:var(--accent-amber); }
+
+/* ================= Presence dropdown (who's in the room) ================= */
+.presence-wrap{ position:relative; }
+.presence-btn{ display:flex; align-items:center; gap:2px; }
+.presence-dropdown{
+  position:absolute; top:calc(100% + 8px); left:0; z-index:30; min-width:180px; max-width:260px;
+  background:var(--panel); border:1px solid var(--panel-border); border-radius:12px; box-shadow:var(--shadow-lg);
+  padding:8px; max-height:240px; overflow-y:auto;
+}
+.presence-row{
+  display:flex; align-items:center; gap:8px; padding:7px 8px; border-radius:8px; font-size:13px; color:var(--ink);
+}
+.presence-row:hover{ background:#F3F4F7; }
+.presence-dot{ width:8px; height:8px; border-radius:50%; background:var(--accent-teal); flex-shrink:0; }
 
 /* ================= Activity log (right panel) ================= */
 .oplog{

@@ -47,8 +47,13 @@
       <span class="status-pill">
         <span class="status-dot" id="statusDot"></span>
         <span id="statusText">Connecting…</span>
-        <span class="peer-count">· <span id="peerCount">1</span> person here</span>
       </span>
+      <div class="presence-wrap">
+        <button class="pill-btn presence-btn" id="presenceBtn">
+          <span class="peer-count">· <span id="peerCount">1</span> person here</span> ▾
+        </button>
+        <div class="presence-dropdown" id="presenceDropdown" style="display:none"></div>
+      </div>
     </div>
     <div class="topbar-center">
       <span class="room-info">
@@ -59,6 +64,7 @@
     </div>
     <div class="topbar-right">
       <span id="userName" class="user-name">you: ---</span>
+      <button id="editNameBtn" class="pill-btn" title="Change your display name">✎ Edit name</button>
       <button id="signOutBtn" class="pill-btn" style="display:none">Sign out</button>
     </div>
   </div>
@@ -153,12 +159,16 @@
 
         <!-- ---- Shown only when the activity log is collapsed ---- -->
         <button class="show-log-btn" id="showLogBtn" style="display:none" title="Show activity log">📜 Show log</button>
+
+        <!-- ---- Shown only when Time Machine is collapsed ---- -->
+        <button class="show-tm-btn" id="showTmBtn" style="display:none" title="Show Time Machine">⏱ Show Time Machine</button>
       </div>
 
-      <div class="timemachine">
+      <div class="timemachine" id="timeMachinePanel">
         <div class="tm-heading">
           <span class="tm-title">⏱ Time Machine</span>
           <span class="tm-subtitle">Drag the slider to see how the board looked earlier. Save that version as a brand-new board, or bring in someone else's board — nothing ever gets lost or overwritten.</span>
+          <button id="hideTmBtn" class="pill-btn tm-hide-btn" title="Hide Time Machine to give the board more room">✕ Hide</button>
         </div>
         <div class="tm-row">
           <span class="tm-slider-label">Start</span>
