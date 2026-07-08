@@ -42,7 +42,7 @@
 
   <!-- ---- Top bar: connection, room, identity ---- -->
   <div class="topbar">
-    <div class="topbar-left">
+    <div class="topbar-row topbar-row-1">
       <span class="brand">✎ Collab Whiteboard</span>
       <span class="status-pill">
         <span class="status-dot" id="statusDot"></span>
@@ -57,17 +57,18 @@
       <button class="pill-btn mic-btn" id="micBtn" title="Turn on your mic so others in this room can hear you">🎤 Mic off</button>
       <span id="voiceStatus" class="voice-status"></span>
     </div>
-    <div class="topbar-center">
+    <div class="topbar-row topbar-row-2">
       <span class="room-info">
         Room code: <b id="roomLabel">-</b>
         <button id="copyLinkBtn" class="pill-btn">📋 Copy invite link</button>
-        <button id="downloadBtn" class="pill-btn">💾 Save as image</button>
       </span>
-    </div>
-    <div class="topbar-right">
-      <span id="userName" class="user-name">you: ---</span>
-      <button id="editNameBtn" class="pill-btn" title="Change your display name">✎ Edit name</button>
-      <button id="signOutBtn" class="pill-btn" style="display:none">Sign out</button>
+      <div class="profile-wrap">
+        <button class="pill-btn profile-btn" id="profileBtn">👤 <span id="userName">you: ---</span> ▾</button>
+        <div class="profile-dropdown" id="profileDropdown" style="display:none">
+          <button id="editNameBtn" class="profile-dropdown-item">✎ Edit name</button>
+          <button id="signOutBtn" class="profile-dropdown-item" style="display:none">🚪 Sign out</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -151,6 +152,9 @@
 
           <div class="ft-divider"></div>
 
+          <button class="ft-btn" id="downloadBtn" title="Save the board as a PNG image">
+            <span class="ft-icon">💾</span><span class="ft-label">Save</span>
+          </button>
           <button class="ft-btn ft-btn-danger" id="clearBtn" title="Clear board for everyone">
             <span class="ft-icon">🗑</span><span class="ft-label">Clear</span>
           </button>

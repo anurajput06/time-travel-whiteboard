@@ -39,6 +39,7 @@
   // session only, for now — it doesn't persist back to the account).
   const editNameBtn = document.getElementById('editNameBtn');
   editNameBtn.addEventListener('click', () => {
+    document.getElementById('profileDropdown').style.display = 'none';
     const next = window.prompt('Your display name (visible to others in this room):', displayName);
     if (next === null) return; // cancelled
     const clean = next.trim().slice(0, 40);
@@ -95,8 +96,8 @@
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      downloadBtn.textContent = '✓ Saved!';
-      setTimeout(() => { downloadBtn.textContent = '💾 Save as image'; }, 1500);
+      downloadBtn.innerHTML = '<span class="ft-icon">✓</span><span class="ft-label">Saved!</span>';
+      setTimeout(() => { downloadBtn.innerHTML = '<span class="ft-icon">💾</span><span class="ft-label">Save</span>'; }, 1500);
     }, 'image/png');
   });
 
@@ -175,6 +176,17 @@
   });
   document.addEventListener('click', () => { presenceDropdown.style.display = 'none'; });
   presenceDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+  // ---- Profile dropdown (name / edit name / sign out) ----
+  const profileBtn = document.getElementById('profileBtn');
+  const profileDropdown = document.getElementById('profileDropdown');
+  profileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = profileDropdown.style.display !== 'none';
+    profileDropdown.style.display = open ? 'none' : 'flex';
+  });
+  document.addEventListener('click', () => { profileDropdown.style.display = 'none'; });
+  profileDropdown.addEventListener('click', (e) => e.stopPropagation());
 
   // ---- Voice chat: WebRTC audio, signaled over the existing WebSocket ----
   // Mesh model: whoever has their mic ON calls everyone else in the room
@@ -274,7 +286,7 @@
     micOn = true;
     micBtn.textContent = '🎤 Mic on';
     micBtn.classList.add('active');
-    voiceStatus.textContent = 'Others can hear you';
+    voiceStatus.textContent = 'Others here can hear you';
     roomPeers.filter(p => p.id !== myPeerId).forEach(p => callPeer(p.id));
   }
   function turnMicOff() {
