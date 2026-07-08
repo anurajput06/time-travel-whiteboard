@@ -274,7 +274,7 @@
     micOn = true;
     micBtn.textContent = '🎤 Mic on';
     micBtn.classList.add('active');
-    voiceStatus.textContent = 'Others here can hear you';
+    voiceStatus.textContent = 'Others can hear you';
     roomPeers.filter(p => p.id !== myPeerId).forEach(p => callPeer(p.id));
   }
   function turnMicOff() {
